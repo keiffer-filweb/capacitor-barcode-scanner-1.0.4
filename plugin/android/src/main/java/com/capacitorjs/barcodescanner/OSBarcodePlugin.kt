@@ -8,9 +8,7 @@ import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.ActivityCallback
 import com.getcapacitor.annotation.CapacitorPlugin
-import com.outsystems.plugins.barcode.controller.OSBARCController
-import com.outsystems.plugins.barcode.model.OSBARCScanParameters
-import com.outsystems.plugins.barcode.view.OSBARCScannerActivity
+// OutSystems AAR removed; using internal ScannerActivity with ML Kit
 
 @CapacitorPlugin(name = "CapacitorBarcodeScanner")
 class CapacitorBarcodeScannerPlugin : Plugin() {
@@ -36,18 +34,16 @@ class CapacitorBarcodeScannerPlugin : Plugin() {
         val scanOrientation = nativeOptions?.getInteger("scanOrientation")
         val androidScanningLibrary = nativeOptions?.getJSObject("android")?.getString("scanningLibrary")
 
-        val parameters = OSBARCScanParameters(
-                scanInstructions = scanInstructions,
-                cameraDirection = cameraDirection,
-                scanOrientation = scanOrientation,
-                scanButton = scanButton!!,
-                scanText = scanText!!,
-                hint = hint,
-                androidScanningLibrary = androidScanningLibrary
-        )
-
     val scanIntent = Intent(activity, ScannerActivity::class.java)
-    // Keep parameters available for future extension
+    // Pass simple options as extras for possible future use by the ScannerActivity
+    scanIntent.putExtra("scanInstructions", scanInstructions)
+    scanIntent.putExtra("scanButton", scanButton)
+    scanIntent.putExtra("scanText", scanText)
+    scanIntent.putExtra("cameraDirection", cameraDirection)
+    scanIntent.putExtra("hint", hint)
+    scanIntent.putExtra("scanOrientation", scanOrientation)
+    scanIntent.putExtra("androidScanningLibrary", androidScanningLibrary)
+
     startActivityForResult(call, scanIntent, "handleScanResult")
     }
 
