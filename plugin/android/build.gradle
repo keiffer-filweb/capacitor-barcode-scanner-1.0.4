@@ -77,8 +77,8 @@ repositories {
 
 dependencies {
     // implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
-    //noinspection GradleDynamicVersion
-    implementation "com.github.outsystems:osbarcode-android:1.1.+@aar"
+    // Removed OutSystems AAR dependency (contained prebuilt native libs that break Play Console 16KB requirement).
+    // We now rely on ML Kit / ZXing dependencies below and provide an internal scanner implementation.
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation 'androidx.activity:activity-ktx:1.8.2'

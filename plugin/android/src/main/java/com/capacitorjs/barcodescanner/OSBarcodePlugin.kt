@@ -19,11 +19,8 @@ class CapacitorBarcodeScannerPlugin : Plugin() {
         private const val SCAN_REQUEST_CODE = 112
     }
 
-    private lateinit var barcodeController: OSBARCController
-
     override fun load() {
         super.load()
-        barcodeController = OSBARCController()
     }
 
     @PluginMethod
@@ -49,25 +46,22 @@ class CapacitorBarcodeScannerPlugin : Plugin() {
                 androidScanningLibrary = androidScanningLibrary
         )
 
-        val scanIntent = Intent(activity, OSBARCScannerActivity::class.java)
-                .putExtra("SCAN_PARAMETERS", parameters)
-
-        startActivityForResult(call, scanIntent, "handleScanResult")
+    val scanIntent = Intent(activity, ScannerActivity::class.java)
+    // Keep parameters available for future extension
+    startActivityForResult(call, scanIntent, "handleScanResult")
     }
 
     @ActivityCallback
     fun handleScanResult(call: PluginCall, result: ActivityResult) {
-        barcodeController.handleActivityResult(
-                SCAN_REQUEST_CODE, result.resultCode, result.data,
-                onSuccess = { scanResult ->
-                    val ret = JSObject()
-                    ret.put("ScanResult", scanResult)
-                    call.resolve(ret)
-                },
-                onError = { error ->
-                    call.reject(error.description, formatErrorCode(error.code))
-                }
-        )
+        // Minimal stubbed handling: return a cancelled or empty scan result.
+        if (result.resultCode == android.app.Activity.RESULT_OK && result.data != null) {
+            val ret = JSObject()
+            val scanned = result.data?.getStringExtra("scanned_value") ?: ""
+            ret.put("ScanResult", scanned)
+            call.resolve(ret)
+        } else {
+            call.reject("Scan cancelled or failed", formatErrorCode(1))
+        }
     }
 
     private fun formatErrorCode(code: Int): String {
